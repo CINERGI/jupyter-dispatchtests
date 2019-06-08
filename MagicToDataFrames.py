@@ -7,14 +7,14 @@
 # Code is modified from code at https://github.com/PmagPy/PmagPy in ipmag.py and pmag.py modules (Licensed under a 3-clause BSD license. See [license.txt](https://github.com/ltauxe/PmagPy/blob/master/license.txt) for details.).
 # Modifed and adapted by Stephen M. Richard 2019-06-06
 
-# In[1]:
+# In[ ]:
 
 #imports
 import pandas as pd
 import requests
 
 
-# In[2]:
+# In[ ]:
 
 def magicToDataframe(data_model=3., txt=""):
     """
@@ -152,7 +152,7 @@ def magicToDataframe(data_model=3., txt=""):
     return framedict
 
 
-# In[4]:
+# In[ ]:
 
 def download_from_magic(con_id):
     """
@@ -161,19 +161,26 @@ def download_from_magic(con_id):
     your chosen dir_path
     Parameters
     ----------
-    con_id : number
-        MagIC contribution id, i.e. 12366
-    dir_path : str, default "."
-        directory for outputting files
+    con_id : string
+        either a MagIC contribution id, i.e. 12366, 
+        or a URL that will get a MagIC contribution
+    
     Returns
-    ---------
-    bool : True or False indicating whether download was successful
+    dictionary with key for each section of the MagIC data document, and 
+     value that is pandas dataframe containing the table for that section.
     """
+    
+    #print("con_id" + con_id)
     if not requests:
         print('-W- You must install the requests module to use this functionality')
         return
     try:
-        res = requests.get('https://earthref.org/MagIC/download/{}/'.format(con_id))
+        if (('https://' in str(con_id)) or ('http://' in str(con_id))):
+            theURL=str(con_id)
+        else:
+            theURL='https://earthref.org/MagIC/download/{}/'.format(con_id)
+        #print('MagIC data URL ' + theURL)
+        res = requests.get(theURL)
     except (requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError,
                 requests.exceptions.ReadTimeout):
         print("-W- Could not connect to MagIC")
@@ -209,7 +216,7 @@ def download_from_magic(con_id):
     return resultframedict
 
 
-# In[5]:
+# In[ ]:
 
 def magic_writeDict(framedict, Recs, file_type):
     """
